@@ -173,7 +173,6 @@ impl Motion {
                 }]),
             ]))],
             Motion::Right => vec![ReedlineOption::Event(ReedlineEvent::UntilFound(vec![
-                ReedlineEvent::HistoryHintComplete,
                 ReedlineEvent::MenuRight,
                 ReedlineEvent::Edit(vec![EditCommand::MoveRight {
                     select: select_mode,

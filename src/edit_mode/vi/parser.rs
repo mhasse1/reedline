@@ -494,16 +494,13 @@ mod tests {
         ReedlineEvent::Multiple(vec![ReedlineEvent::Edit(vec![EditCommand::MoveBigWordRightStart{select:false}])]))]
     #[case(&['2', 'l'], ReedlineEvent::Multiple(vec![
         ReedlineEvent::UntilFound(vec![
-                ReedlineEvent::HistoryHintComplete,
                 ReedlineEvent::MenuRight,
                 ReedlineEvent::Edit(vec![EditCommand::MoveRight{select:false}]),
             ]),ReedlineEvent::UntilFound(vec![
-                ReedlineEvent::HistoryHintComplete,
                 ReedlineEvent::MenuRight,
                 ReedlineEvent::Edit(vec![EditCommand::MoveRight{select:false}]),
             ]) ]))]
     #[case(&['l'], ReedlineEvent::Multiple(vec![ReedlineEvent::UntilFound(vec![
-                ReedlineEvent::HistoryHintComplete,
                 ReedlineEvent::MenuRight,
                 ReedlineEvent::Edit(vec![EditCommand::MoveRight{select:false}]),
             ])]))]
@@ -625,16 +622,13 @@ mod tests {
         ReedlineEvent::Multiple(vec![ReedlineEvent::Edit(vec![EditCommand::MoveBigWordRightStart{select:true}])]))]
     #[case(&['2', 'l'], ReedlineEvent::Multiple(vec![
         ReedlineEvent::UntilFound(vec![
-                ReedlineEvent::HistoryHintComplete,
                 ReedlineEvent::MenuRight,
                 ReedlineEvent::Edit(vec![EditCommand::MoveRight{select:true}]),
             ]),ReedlineEvent::UntilFound(vec![
-                ReedlineEvent::HistoryHintComplete,
                 ReedlineEvent::MenuRight,
                 ReedlineEvent::Edit(vec![EditCommand::MoveRight{select:true}]),
             ]) ]))]
     #[case(&['l'], ReedlineEvent::Multiple(vec![ReedlineEvent::UntilFound(vec![
-                ReedlineEvent::HistoryHintComplete,
                 ReedlineEvent::MenuRight,
                 ReedlineEvent::Edit(vec![EditCommand::MoveRight{select:true}]),
             ])]))]
