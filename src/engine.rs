@@ -166,6 +166,10 @@ pub struct Reedline {
     completer: Box<dyn Completer>,
     quick_completions: bool,
     partial_completions: bool,
+    immediate_completions: bool,
+
+    // Original buffer state saved when menu activates (for immediate completion cycling)
+    menu_original_buffer: Option<(String, usize)>,
 
     // Highlight the edit buffer
     highlighter: Box<dyn Highlighter>,
@@ -282,6 +286,8 @@ impl Reedline {
             completer,
             quick_completions: false,
             partial_completions: false,
+            immediate_completions: false,
+            menu_original_buffer: None,
             highlighter: buffer_highlighter,
             visual_selection_style,
             hinter,
@@ -420,6 +426,15 @@ impl Reedline {
     #[must_use]
     pub fn with_partial_completions(mut self, partial_completions: bool) -> Self {
         self.partial_completions = partial_completions;
+        self
+    }
+
+    /// Turn on immediate completions. When navigating the completion menu,
+    /// the selected item is inserted into the buffer immediately (like fish/zsh).
+    /// No Enter required to accept — just keep typing to dismiss the menu.
+    #[must_use]
+    pub fn with_immediate_completions(mut self, immediate_completions: bool) -> Self {
+        self.immediate_completions = immediate_completions;
         self
     }
 
@@ -1139,6 +1154,8 @@ impl Reedline {
                             return Ok(EventStatus::Handled);
                         }
 
+                        // Immediate completions: replace buffer with first item on activation
+                        self.immediate_replace_in_buffer();
                         return Ok(EventStatus::Handled);
                     }
                 }
@@ -1158,6 +1175,7 @@ impl Reedline {
                             );
                         }
                         menu.menu_event(MenuEvent::NextElement);
+                        self.immediate_replace_in_buffer();
                         Ok(EventStatus::Handled)
                     }
                 } else {
@@ -1165,39 +1183,49 @@ impl Reedline {
                 }
             }
             ReedlineEvent::MenuPrevious => {
-                self.active_menu()
-                    .map_or(Ok(EventStatus::Inapplicable), |menu| {
-                        menu.menu_event(MenuEvent::PreviousElement);
-                        Ok(EventStatus::Handled)
-                    })
+                if let Some(menu) = self.menus.iter_mut().find(|menu| menu.is_active()) {
+                    menu.menu_event(MenuEvent::PreviousElement);
+                    self.immediate_replace_in_buffer();
+                    Ok(EventStatus::Handled)
+                } else {
+                    Ok(EventStatus::Inapplicable)
+                }
             }
             ReedlineEvent::MenuUp => {
-                self.active_menu()
-                    .map_or(Ok(EventStatus::Inapplicable), |menu| {
-                        menu.menu_event(MenuEvent::MoveUp);
-                        Ok(EventStatus::Handled)
-                    })
+                if let Some(menu) = self.menus.iter_mut().find(|menu| menu.is_active()) {
+                    menu.menu_event(MenuEvent::MoveUp);
+                    self.immediate_replace_in_buffer();
+                    Ok(EventStatus::Handled)
+                } else {
+                    Ok(EventStatus::Inapplicable)
+                }
             }
             ReedlineEvent::MenuDown => {
-                self.active_menu()
-                    .map_or(Ok(EventStatus::Inapplicable), |menu| {
-                        menu.menu_event(MenuEvent::MoveDown);
-                        Ok(EventStatus::Handled)
-                    })
+                if let Some(menu) = self.menus.iter_mut().find(|menu| menu.is_active()) {
+                    menu.menu_event(MenuEvent::MoveDown);
+                    self.immediate_replace_in_buffer();
+                    Ok(EventStatus::Handled)
+                } else {
+                    Ok(EventStatus::Inapplicable)
+                }
             }
             ReedlineEvent::MenuLeft => {
-                self.active_menu()
-                    .map_or(Ok(EventStatus::Inapplicable), |menu| {
-                        menu.menu_event(MenuEvent::MoveLeft);
-                        Ok(EventStatus::Handled)
-                    })
+                if let Some(menu) = self.menus.iter_mut().find(|m| m.is_active()) {
+                    menu.menu_event(MenuEvent::MoveLeft);
+                    self.immediate_replace_in_buffer();
+                    Ok(EventStatus::Handled)
+                } else {
+                    Ok(EventStatus::Inapplicable)
+                }
             }
             ReedlineEvent::MenuRight => {
-                self.active_menu()
-                    .map_or(Ok(EventStatus::Inapplicable), |menu| {
-                        menu.menu_event(MenuEvent::MoveRight);
-                        Ok(EventStatus::Handled)
-                    })
+                if let Some(menu) = self.menus.iter_mut().find(|m| m.is_active()) {
+                    menu.menu_event(MenuEvent::MoveRight);
+                    self.immediate_replace_in_buffer();
+                    Ok(EventStatus::Handled)
+                } else {
+                    Ok(EventStatus::Inapplicable)
+                }
             }
             ReedlineEvent::MenuPageNext => {
                 self.active_menu()
@@ -1585,6 +1613,36 @@ impl Reedline {
         self.menus
             .iter_mut()
             .for_each(|menu| menu.menu_event(MenuEvent::Deactivate));
+        self.menu_original_buffer = None;
+    }
+
+    /// For immediate completions: restore the original buffer, then apply the
+    /// currently selected menu item. This prevents span corruption from cycling.
+    fn immediate_replace_in_buffer(&mut self) {
+        if !self.immediate_completions {
+            return;
+        }
+
+        // Save original buffer on first call
+        if self.menu_original_buffer.is_none() {
+            self.menu_original_buffer = Some((
+                self.editor.get_buffer().to_string(),
+                self.editor.insertion_point(),
+            ));
+        }
+
+        // Restore original buffer so spans are valid
+        if let Some((ref original, insertion_point)) = self.menu_original_buffer {
+            let mut line_buffer = self.editor.line_buffer().clone();
+            line_buffer.replace_range(0..line_buffer.get_buffer().len(), original);
+            line_buffer.set_insertion_point(insertion_point);
+            self.editor.set_line_buffer(line_buffer, UndoBehavior::CreateUndoPoint);
+        }
+
+        // Apply the current menu selection
+        if let Some(menu) = self.menus.iter().find(|m| m.is_active()) {
+            menu.replace_in_buffer(&mut self.editor);
+        }
     }
 
     fn previous_history(&mut self) {
