@@ -29,6 +29,9 @@ pub fn default_vi_normal_keybindings() -> Keybindings {
     );
     kb.add_binding(KM::NONE, KC::Delete, edit_bind(EC::Delete));
 
+    // Ctrl+R = Redo in vi normal mode (overrides SearchHistory from common bindings)
+    kb.add_binding(KM::CONTROL, KC::Char('r'), edit_bind(EC::Redo));
+
     kb
 }
 
