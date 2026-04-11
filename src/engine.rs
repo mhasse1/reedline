@@ -187,9 +187,6 @@ pub struct Reedline {
     // Engine Menus
     menus: Vec<ReedlineMenu>,
 
-    // Original buffer state before menu inline-replace cycling
-    menu_pre_replace_buffer: Option<(String, usize)>,
-
     // Text editor used to open the line buffer for editing
     buffer_editor: Option<BufferEditor>,
 
@@ -290,7 +287,6 @@ impl Reedline {
             mouse_click_mode: MouseClickMode::default(),
             cwd: None,
             menus: Vec::new(),
-            menu_pre_replace_buffer: None,
             buffer_editor: None,
             cursor_shapes: None,
             bracketed_paste: BracketedPasteGuard::default(),
@@ -1128,9 +1124,6 @@ impl Reedline {
                             return Ok(EventStatus::Handled);
                         }
 
-                        // Replace buffer with first selected item immediately
-                        let _ = menu;
-                        self.menu_replace_in_buffer();
                         return Ok(EventStatus::Handled);
                     }
                 }
@@ -1150,8 +1143,6 @@ impl Reedline {
                             );
                         }
                         menu.menu_event(MenuEvent::NextElement);
-                        let _ = menu;
-                        self.menu_replace_in_buffer();
                         Ok(EventStatus::Handled)
                     }
                 } else {
@@ -1159,54 +1150,39 @@ impl Reedline {
                 }
             }
             ReedlineEvent::MenuPrevious => {
-                if let Some(menu) = self.menus.iter_mut().find(|menu| menu.is_active()) {
-                    menu.menu_event(MenuEvent::PreviousElement);
-                    let _ = menu;
-                    self.menu_replace_in_buffer();
-                    Ok(EventStatus::Handled)
-                } else {
-                    Ok(EventStatus::Inapplicable)
-                }
+                self.active_menu()
+                    .map_or(Ok(EventStatus::Inapplicable), |menu| {
+                        menu.menu_event(MenuEvent::PreviousElement);
+                        Ok(EventStatus::Handled)
+                    })
             }
             ReedlineEvent::MenuUp => {
-                if let Some(menu) = self.menus.iter_mut().find(|menu| menu.is_active()) {
-                    menu.menu_event(MenuEvent::MoveUp);
-                    let _ = menu;
-                    self.menu_replace_in_buffer();
-                    Ok(EventStatus::Handled)
-                } else {
-                    Ok(EventStatus::Inapplicable)
-                }
+                self.active_menu()
+                    .map_or(Ok(EventStatus::Inapplicable), |menu| {
+                        menu.menu_event(MenuEvent::MoveUp);
+                        Ok(EventStatus::Handled)
+                    })
             }
             ReedlineEvent::MenuDown => {
-                if let Some(menu) = self.menus.iter_mut().find(|menu| menu.is_active()) {
-                    menu.menu_event(MenuEvent::MoveDown);
-                    let _ = menu;
-                    self.menu_replace_in_buffer();
-                    Ok(EventStatus::Handled)
-                } else {
-                    Ok(EventStatus::Inapplicable)
-                }
+                self.active_menu()
+                    .map_or(Ok(EventStatus::Inapplicable), |menu| {
+                        menu.menu_event(MenuEvent::MoveDown);
+                        Ok(EventStatus::Handled)
+                    })
             }
             ReedlineEvent::MenuLeft => {
-                if let Some(menu) = self.menus.iter_mut().find(|menu| menu.is_active()) {
-                    menu.menu_event(MenuEvent::MoveLeft);
-                    let _ = menu;
-                    self.menu_replace_in_buffer();
-                    Ok(EventStatus::Handled)
-                } else {
-                    Ok(EventStatus::Inapplicable)
-                }
+                self.active_menu()
+                    .map_or(Ok(EventStatus::Inapplicable), |menu| {
+                        menu.menu_event(MenuEvent::MoveLeft);
+                        Ok(EventStatus::Handled)
+                    })
             }
             ReedlineEvent::MenuRight => {
-                if let Some(menu) = self.menus.iter_mut().find(|menu| menu.is_active()) {
-                    menu.menu_event(MenuEvent::MoveRight);
-                    let _ = menu;
-                    self.menu_replace_in_buffer();
-                    Ok(EventStatus::Handled)
-                } else {
-                    Ok(EventStatus::Inapplicable)
-                }
+                self.active_menu()
+                    .map_or(Ok(EventStatus::Inapplicable), |menu| {
+                        menu.menu_event(MenuEvent::MoveRight);
+                        Ok(EventStatus::Handled)
+                    })
             }
             ReedlineEvent::MenuPageNext => {
                 self.active_menu()
@@ -1508,32 +1484,6 @@ impl Reedline {
         self.menus
             .iter_mut()
             .for_each(|menu| menu.menu_event(MenuEvent::Deactivate));
-        self.menu_pre_replace_buffer = None;
-    }
-
-    /// Replace buffer with the currently selected menu item, handling cycling correctly.
-    /// Saves the original buffer on first call, restores it before each subsequent replacement.
-    fn menu_replace_in_buffer(&mut self) {
-        if let Some(menu) = self.menus.iter().find(|menu| menu.is_active()) {
-            // Save original buffer on first replacement
-            if self.menu_pre_replace_buffer.is_none() {
-                self.menu_pre_replace_buffer = Some((
-                    self.editor.get_buffer().to_string(),
-                    self.editor.insertion_point(),
-                ));
-            }
-
-            // Restore original buffer so the span is correct
-            if let Some((ref original, insertion_point)) = self.menu_pre_replace_buffer {
-                let mut line_buffer = self.editor.line_buffer().clone();
-                line_buffer.replace_range(0..line_buffer.get_buffer().len(), original);
-                line_buffer.set_insertion_point(insertion_point);
-                self.editor.set_line_buffer(line_buffer, UndoBehavior::CreateUndoPoint);
-            }
-
-            // Now apply the replacement with correct span
-            menu.replace_in_buffer(&mut self.editor);
-        }
     }
 
     fn previous_history(&mut self) {
