@@ -95,6 +95,21 @@ pub trait Menu: Send {
     /// Checks if the menu is active
     fn is_active(&self) -> bool;
 
+    /// Whether the user has explicitly navigated to a selection.
+    ///
+    /// On Activate, menus typically default to the first entry. Some callers
+    /// prefer "open menu, but don't accept anything on Enter unless the user
+    /// actually arrowed/tabbed to a choice". When this returns `false` while
+    /// the menu `is_active()`, reedline's Enter handler deactivates the menu
+    /// and falls through to normal Submit behavior instead of replacing the
+    /// buffer with the default-highlighted item.
+    ///
+    /// Default implementation returns `true` to preserve legacy behavior for
+    /// menus that haven't been updated to track this.
+    fn has_selection(&self) -> bool {
+        true
+    }
+
     /// Selects what type of event happened with the menu
     fn menu_event(&mut self, event: MenuEvent);
 
@@ -387,6 +402,10 @@ impl Menu for ReedlineMenu {
 
     fn is_active(&self) -> bool {
         self.as_ref().is_active()
+    }
+
+    fn has_selection(&self) -> bool {
+        self.as_ref().has_selection()
     }
 
     fn menu_event(&mut self, event: MenuEvent) {

@@ -83,6 +83,11 @@ pub struct ColumnarMenu {
     /// Number of rows that are skipped when printing,
     /// depending on selected value and terminal height
     skip_rows: u16,
+    /// True once the user has explicitly navigated to a selection via
+    /// Next/Previous/Move*. Reset on each Activate. Exposed via the
+    /// `has_selection()` Menu trait method so the engine can distinguish
+    /// "open with default highlighted position" from "user picked this".
+    explicitly_advanced: bool,
     /// Event sent to the menu
     event: Option<MenuEvent>,
     /// Longest suggestion found in the values
@@ -104,6 +109,7 @@ impl Default for ColumnarMenu {
             col_pos: 0,
             row_pos: 0,
             skip_rows: 0,
+            explicitly_advanced: false,
             event: None,
             longest_suggestion: 0,
             input: None,
@@ -505,6 +511,14 @@ impl Menu for ColumnarMenu {
         self.active
     }
 
+    /// Only true when the user has actually navigated to a selection.
+    /// While the menu is open with its default (first) highlighted entry
+    /// but no navigation has occurred, Enter should submit the typed
+    /// buffer rather than accepting the default entry.
+    fn has_selection(&self) -> bool {
+        self.active && self.explicitly_advanced
+    }
+
     /// The columnar menu can to quick complete if there is only one element
     fn can_quick_complete(&self) -> bool {
         true
@@ -538,10 +552,27 @@ impl Menu for ColumnarMenu {
     /// Selects what type of event happened with the menu
     fn menu_event(&mut self, event: MenuEvent) {
         match &event {
-            MenuEvent::Activate(_) => self.active = true,
+            MenuEvent::Activate(_) => {
+                self.active = true;
+                // Open with no explicit selection; Enter before any
+                // navigation falls through to normal submit.
+                self.explicitly_advanced = false;
+            }
             MenuEvent::Deactivate => {
                 self.active = false;
                 self.input = None;
+                self.explicitly_advanced = false;
+            }
+            // Any navigation event counts as "user picked something".
+            MenuEvent::NextElement
+            | MenuEvent::PreviousElement
+            | MenuEvent::MoveUp
+            | MenuEvent::MoveDown
+            | MenuEvent::MoveLeft
+            | MenuEvent::MoveRight
+            | MenuEvent::NextPage
+            | MenuEvent::PreviousPage => {
+                self.explicitly_advanced = true;
             }
             _ => {}
         }

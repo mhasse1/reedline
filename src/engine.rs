@@ -1310,15 +1310,29 @@ impl Reedline {
             ReedlineEvent::Enter | ReedlineEvent::Submit | ReedlineEvent::SubmitOrNewline
                 if self.menus.iter().any(|menu| menu.is_active()) =>
             {
+                // If the menu is active but the user hasn't navigated to a
+                // selection yet (has_selection() == false), deactivate the
+                // menu without replacing the buffer and fall through to
+                // normal Submit behavior. This gives users the fish/zsh
+                // UX: Tab opens the menu, Enter submits what they typed,
+                // and you only accept a menu entry by arrow/Tab-ing to it
+                // first.
+                let any_explicit = self.menus.iter().any(|m| m.is_active() && m.has_selection());
                 for menu in self.menus.iter_mut() {
                     if menu.is_active() {
-                        menu.replace_in_buffer(&mut self.editor);
+                        if any_explicit {
+                            menu.replace_in_buffer(&mut self.editor);
+                        }
                         menu.menu_event(MenuEvent::Deactivate);
-
-                        return Ok(EventStatus::Handled);
                     }
                 }
-                unreachable!()
+                if any_explicit {
+                    return Ok(EventStatus::Handled);
+                }
+                // Fall through to the normal Enter/Submit/SubmitOrNewline
+                // branch below by re-dispatching. The menu is now inactive
+                // so the `if menus... is_active()` guard above won't match.
+                return self.handle_editor_event(prompt, event);
             }
             ReedlineEvent::Enter => {
                 #[cfg(feature = "bashisms")]
