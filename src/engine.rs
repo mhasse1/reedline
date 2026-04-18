@@ -1137,7 +1137,20 @@ impl Reedline {
             ReedlineEvent::Menu(name) => {
                 if self.active_menu().is_none() {
                     if let Some(menu) = self.menus.iter_mut().find(|menu| menu.name() == name) {
-                        menu.menu_event(MenuEvent::Activate(self.quick_completions));
+                        // When we're going to populate values synchronously
+                        // (quick_completions *or* immediate_completions),
+                        // pass `updated=true` to `Activate` so the paint
+                        // cycle's `update_working_details` doesn't re-run
+                        // `update_values` against the buffer we're about
+                        // to mutate below via `immediate_replace_in_buffer`.
+                        // Re-running against the mutated buffer re-runs
+                        // completion on the *selected* value — e.g.
+                        // after Tab replaces "ls d" with "ls Desktop/"
+                        // the menu would re-query for children of
+                        // Desktop/ instead of keeping the siblings of d*.
+                        let values_updated_sync =
+                            self.quick_completions || self.immediate_completions;
+                        menu.menu_event(MenuEvent::Activate(values_updated_sync));
 
                         if self.quick_completions && menu.can_quick_complete() {
                             menu.update_values(
