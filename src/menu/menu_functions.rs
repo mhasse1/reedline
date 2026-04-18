@@ -51,7 +51,7 @@ pub enum ParseAction {
 ///
 /// ## Example usage
 /// ```
-/// use reedline::menu_functions::{parse_selection_char, ParseAction, ParseResult};
+/// use rushline::menu_functions::{parse_selection_char, ParseAction, ParseResult};
 ///
 /// let parsed = parse_selection_char("this is an example!10", '!');
 ///
@@ -202,7 +202,7 @@ pub fn find_common_string(values: &[Suggestion]) -> Option<(&Suggestion, usize)>
 ///
 /// ## Example usage
 /// ```
-/// use reedline::menu_functions::string_difference;
+/// use rushline::menu_functions::string_difference;
 ///
 /// let new_string = "this is a new string";
 /// let old_string = "this is a string";

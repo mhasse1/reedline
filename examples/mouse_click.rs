@@ -1,7 +1,7 @@
 // Enable mouse click-to-cursor support.
 // cargo run --example mouse_click
 
-use reedline::{DefaultPrompt, MouseClickMode, Reedline, Signal};
+use rushline::{DefaultPrompt, MouseClickMode, Reedline, Signal};
 use std::io;
 
 fn main() -> io::Result<()> {

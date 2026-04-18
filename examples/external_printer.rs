@@ -3,8 +3,8 @@
 // cargo run --example external_printer --features=external_printer
 
 use {
-    reedline::ExternalPrinter,
-    reedline::{DefaultPrompt, Reedline, Signal},
+    rushline::ExternalPrinter,
+    rushline::{DefaultPrompt, Reedline, Signal},
     std::thread,
     std::thread::sleep,
     std::time::Duration,

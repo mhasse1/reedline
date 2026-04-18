@@ -4,7 +4,7 @@
 // "t" [Tab] will allow you to select the completions "test" and "this is the reedline crate"
 // [Enter] to select the chosen alternative
 
-use reedline::{
+use rushline::{
     default_emacs_keybindings, DefaultCompleter, DefaultPrompt, DescriptionMode, EditCommand,
     Emacs, IdeMenu, KeyCode, KeyModifiers, Keybindings, MenuBuilder, Reedline, ReedlineEvent,
     ReedlineMenu, Signal,

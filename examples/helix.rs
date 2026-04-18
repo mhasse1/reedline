@@ -4,7 +4,7 @@
 // The current Helix example maps Ctrl-D to exit and uses the default prompt,
 // which renders the active custom mode indicator as "(helix)".
 
-use reedline::{DefaultPrompt, Helix, Reedline, Signal};
+use rushline::{DefaultPrompt, Helix, Reedline, Signal};
 use std::io;
 
 fn main() -> io::Result<()> {

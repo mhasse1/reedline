@@ -4,7 +4,7 @@
 // Input "complete" followed by [Enter], will accept the input line (Signal::Succeed will be called)
 // Pressing [Enter] will in other cases give you a multi-line prompt.
 
-use reedline::{DefaultPrompt, Reedline, Signal, ValidationResult, Validator};
+use rushline::{DefaultPrompt, Reedline, Signal, ValidationResult, Validator};
 use std::io;
 
 struct CustomValidator;

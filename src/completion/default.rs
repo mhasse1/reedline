@@ -10,7 +10,7 @@ use std::{
 /// # Example
 ///
 /// ```rust
-/// use reedline::{DefaultCompleter, Reedline};
+/// use rushline::{DefaultCompleter, Reedline};
 ///
 /// let commands = vec![
 ///  "test".into(),
@@ -48,7 +48,7 @@ impl Completer for DefaultCompleter {
     ///
     /// # Example
     /// ```
-    /// use reedline::{DefaultCompleter,Completer,Span,Suggestion};
+    /// use rushline::{DefaultCompleter,Completer,Span,Suggestion};
     ///
     /// let mut completions = DefaultCompleter::default();
     /// completions.insert(vec!["batman","robin","batmobile","batcave","robber"].iter().map(|s| s.to_string()).collect());
@@ -148,7 +148,7 @@ impl DefaultCompleter {
     ///
     /// # Example
     /// ```
-    /// use reedline::{DefaultCompleter,Completer};
+    /// use rushline::{DefaultCompleter,Completer};
     ///
     /// let mut completions = DefaultCompleter::default();
     ///
@@ -177,7 +177,7 @@ impl DefaultCompleter {
     ///
     /// # Example
     /// ```
-    /// use reedline::{DefaultCompleter,Completer,Span,Suggestion};
+    /// use rushline::{DefaultCompleter,Completer,Span,Suggestion};
     ///
     /// let mut completions = DefaultCompleter::default();
     /// completions.insert(vec!["test-hyphen","test_underscore"].iter().map(|s| s.to_string()).collect());
@@ -207,7 +207,7 @@ impl DefaultCompleter {
     /// Clears all the data from the tree
     /// # Example
     /// ```
-    /// use reedline::{DefaultCompleter,Completer};
+    /// use rushline::{DefaultCompleter,Completer};
     ///
     /// let mut completions = DefaultCompleter::default();
     /// completions.insert(vec!["batman","robin","batmobile","batcave","robber"].iter().map(|s| s.to_string()).collect());
@@ -224,7 +224,7 @@ impl DefaultCompleter {
     /// Returns a count of how many words that exist in the tree
     /// # Example
     /// ```
-    /// use reedline::{DefaultCompleter,Completer};
+    /// use rushline::{DefaultCompleter,Completer};
     ///
     /// let mut completions = DefaultCompleter::default();
     /// completions.insert(vec!["batman","robin","batmobile","batcave","robber"].iter().map(|s| s.to_string()).collect());
@@ -237,7 +237,7 @@ impl DefaultCompleter {
     /// Returns the size of the tree, the amount of nodes, not words
     /// # Example
     /// ```
-    /// use reedline::{DefaultCompleter,Completer};
+    /// use rushline::{DefaultCompleter,Completer};
     ///
     /// let mut completions = DefaultCompleter::default();
     /// completions.insert(vec!["batman","robin","batmobile","batcave","robber"].iter().map(|s| s.to_string()).collect());
@@ -253,7 +253,7 @@ impl DefaultCompleter {
     /// ignored.
     /// # Example
     /// ```
-    /// use reedline::{DefaultCompleter,Completer};
+    /// use rushline::{DefaultCompleter,Completer};
     ///
     /// let mut completions = DefaultCompleter::default().set_min_word_len(4);
     /// completions.insert(vec!["one","two","three","four","five"].iter().map(|s| s.to_string()).collect());

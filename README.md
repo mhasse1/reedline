@@ -1,3 +1,13 @@
+# rushline — a line editor for Rust CLIs
+
+> **Fork of [nushell/reedline](https://github.com/nushell/reedline).** rushline is a friendly downstream: the API surface, feature set, and docs below stay faithful to upstream reedline. Divergence is concentrated in menu behavior, vi mode, and a handful of targeted fixes. Changes that make sense for everyone are offered back to nushell as PRs; changes that don't are our burden to carry.
+>
+> **Why the fork exists.** rushline is the line editor for [rush](https://github.com/mhasse1/rush), a Rust shell with specific needs around IDE-style completion menus, vi-mode ergonomics, and fzf-style integration. Rather than maintain those as a pile of patches on top of reedline, we promoted them to a sibling project with a matching license (MIT), sibling API, and clear provenance.
+>
+> **Upstream relationship.** We track upstream main, cherry-pick fixes in both directions when applicable, and keep the crate layout compatible enough that a user of reedline can switch by changing one line of Cargo.toml and one import. See [UPSTREAM.md](./UPSTREAM.md) for the list of rushline-specific changes and their status.
+
+---
+
 # A feature-rich line editor - powering Nushell
 
 ![GitHub](https://img.shields.io/github/license/nushell/reedline)

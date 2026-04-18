@@ -13,7 +13,7 @@
 //   B     = Start of user input area (end of prompt)
 //   P;k=r = Right prompt marker
 
-use reedline::{DefaultPrompt, Osc133Markers, Reedline, Signal};
+use rushline::{DefaultPrompt, Osc133Markers, Reedline, Signal};
 use std::io;
 
 fn main() -> io::Result<()> {

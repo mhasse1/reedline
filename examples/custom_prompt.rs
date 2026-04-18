@@ -3,7 +3,7 @@
 //
 // Pressing keys will increase the right prompt value
 
-use reedline::{
+use rushline::{
     Prompt, PromptEditMode, PromptHistorySearch, PromptHistorySearchStatus, Reedline, Signal,
 };
 use std::{borrow::Cow, cell::Cell, io};

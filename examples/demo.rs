@@ -6,7 +6,7 @@ use {
         event::{KeyCode, KeyModifiers},
     },
     nu_ansi_term::{Color, Style},
-    reedline::{
+    rushline::{
         default_emacs_keybindings, default_vi_insert_keybindings, default_vi_normal_keybindings,
         ColumnarMenu, DefaultCompleter, DefaultHinter, DefaultPrompt, DefaultValidator,
         EditCommand, EditMode, Emacs, ExampleHighlighter, Keybindings, ListMenu, Reedline,
@@ -15,10 +15,10 @@ use {
 };
 
 #[cfg(not(any(feature = "sqlite", feature = "sqlite-dynlib")))]
-use reedline::FileBackedHistory;
-use reedline::{CursorConfig, MenuBuilder};
+use rushline::FileBackedHistory;
+use rushline::{CursorConfig, MenuBuilder};
 
-fn main() -> reedline::Result<()> {
+fn main() -> rushline::Result<()> {
     println!("Ctrl-D to quit");
     // quick command like parameter handling
     let vi_mode = matches!(std::env::args().nth(1), Some(x) if x == "--vi");
@@ -34,7 +34,7 @@ fn main() -> reedline::Result<()> {
 
     #[cfg(any(feature = "sqlite", feature = "sqlite-dynlib"))]
     let history = Box::new(
-        reedline::SqliteBackedHistory::with_file(
+        rushline::SqliteBackedHistory::with_file(
             "history.sqlite3".into(),
             history_session_id,
             Some(chrono::Utc::now()),
@@ -147,7 +147,7 @@ fn main() -> reedline::Result<()> {
                 #[cfg(any(feature = "sqlite", feature = "sqlite-dynlib"))]
                 if !buffer.is_empty() {
                     line_editor
-                        .update_last_command_context(&|mut c: reedline::HistoryItem| {
+                        .update_last_command_context(&|mut c: rushline::HistoryItem| {
                             c.start_timestamp = Some(chrono::Utc::now());
                             c.hostname =
                                 Some(gethostname::gethostname().to_string_lossy().to_string());

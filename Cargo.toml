@@ -1,12 +1,15 @@
 [package]
-authors = ["The Nushell Project Developers"]
-description = "A readline-like crate for CLI text input"
+authors = [
+    "Mark Hasse",
+    "The Nushell Project Developers",
+]
+description = "A readline-like line editor for CLI text input. Fork of nushell/reedline."
 edition = "2021"
 license = "MIT"
-name = "reedline"
-repository = "https://github.com/nushell/reedline"
+name = "rushline"
+repository = "https://github.com/mhasse1/rushline"
 rust-version = "1.63.0"
-version = "0.46.0"
+version = "0.46.0-rush.1"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]

@@ -9,7 +9,7 @@
 // To run:
 // cargo run --example break_signal
 
-use reedline::{DefaultPrompt, Reedline, Signal};
+use rushline::{DefaultPrompt, Reedline, Signal};
 use std::{
     io,
     sync::{

@@ -4,7 +4,7 @@
 // This example shows the raw escape sequences that would be emitted,
 // making them visible for verification without needing a compatible terminal.
 
-use reedline::{Osc133Markers, Osc633Markers, PromptKind, SemanticPromptMarkers};
+use rushline::{Osc133Markers, Osc633Markers, PromptKind, SemanticPromptMarkers};
 
 fn main() {
     println!("Semantic Prompt Verification");
