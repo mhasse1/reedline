@@ -1,5 +1,14 @@
 # rushline — a line editor for Rust CLIs
 
+<p align="center">
+  <img src="assets/many-colored-rush-tyrant.jpg" alt="Many-colored rush tyrant (Tachuris rubrigastra), a small brightly-colored bird perched on a reed" width="360"/>
+</p>
+<p align="center">
+  <em>The many-colored rush tyrant (<a href="https://en.wikipedia.org/wiki/Many-colored_rush_tyrant"><em>Tachuris rubrigastra</em></a>) — a small, vividly colored flycatcher that lives in the reed beds of South America. Named after <strong>rush</strong>es (the reed it perches on), loud in color (fitting for a shell that cares about themes), and a tyrant among small birds (like every shell that's sure it knows best).<br/>Photo © <a href="https://www.flickr.com/photos/dfaulder/4302352513/">dfaulder, Flickr</a>, <a href="https://creativecommons.org/licenses/by/2.0/">CC&nbsp;BY&nbsp;2.0</a>.</em>
+</p>
+
+**Lineage:** `rushline` → [`reedline`](https://github.com/nushell/reedline) → [GNU `readline`](https://tiswww.case.edu/php/chet/readline/rltop.html). Each generation a line editor for the interactive shells of its era, each one a fork by someone who needed a bit more.
+
 > **Fork of [nushell/reedline](https://github.com/nushell/reedline).** rushline is a friendly downstream: the API surface, feature set, and docs below stay faithful to upstream reedline. Divergence is concentrated in menu behavior, vi mode, and a handful of targeted fixes. Changes that make sense for everyone are offered back to nushell as PRs; changes that don't are our burden to carry.
 >
 > **Why the fork exists.** rushline is the line editor for [rush](https://github.com/mhasse1/rush), a Rust shell with specific needs around IDE-style completion menus, vi-mode ergonomics, and fzf-style integration. Rather than maintain those as a pile of patches on top of reedline, we promoted them to a sibling project with a matching license (MIT), sibling API, and clear provenance.
